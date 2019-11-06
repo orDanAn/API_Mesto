@@ -4,7 +4,7 @@ const path = require('path');
 
 const routerCard = require('./routes/cards.js');
 
-const routerUser = require('./routes/user id.js');
+const routerUser = require('./routes/userId.js');
 
 const routerUsers = require('./routes/users.js');
 
