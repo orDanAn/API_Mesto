@@ -1,8 +1,10 @@
 const routerUsers = require('express').Router();
-const users = require('../data/users.json');
+const { getUsers, createUser } = require('../controllers/controllerUser');
 
-routerUsers.get('/', (req, res) => {
-  res.send(users);
-});
+
+routerUsers.get('/', getUsers);
+
+routerUsers.post('/', createUser);
+
 
 module.exports = routerUsers;
