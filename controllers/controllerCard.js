@@ -8,15 +8,23 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.delCardID = (req, res) => {
-  Card.findByIdAndRemove(req.params._id)
+  Card.findById(req.params._id)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'нет карты с таким ID' });
+      if (!(card.owner.toString() === req.user._id.toString())) {
+        return res.send({ massege: 'это карта не Выша, её нельзя удалить' });
       }
-      return res.send({ data: card });
+      Card.findByIdAndRemove(req.params._id)
+        .then((cardDel) => {
+          if (!cardDel) {
+            return res.send({ message: 'нет карты с таким ID' });
+          }
+          return res.send({ data: cardDel });
+        })
+        .catch((err) => res.status(500).send({ message: err.message }));
     })
     .catch((err) => {
-      if (err.message.indexOf('Cast to ObjectId failed for value') === 0) {
+      if (err.message.indexOf('Cast to ObjectId failed for value') === 0 || err.message.indexOf('Cannot read property') === 0) {
         return res.status(404).send({ massege: 'не правильно указан ID' });
       }
       return res.status(500).send({ message: err.message });

@@ -1,7 +1,7 @@
 {
-  "name": "home_work_12",
-  "version": "1.0.0",
-  "description": "",
+  "name": "API Mesto",
+  "version": "0.0.5",
+  "description": "API project Mesto",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
