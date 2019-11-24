@@ -1,16 +1,8 @@
 const routerUsers = require('express').Router();
-// eslint-disable-next-line object-curly-newline
-const { getUsers, createUser, updateUser, updateAvatar, getUserID } = require('../controllers/controllerUser');
+const users = require('../data/users.json');
 
-
-routerUsers.get('/', getUsers);
-
-routerUsers.get('/:_id', getUserID);
-
-routerUsers.post('/', createUser);
-
-routerUsers.patch('/me', updateUser);
-
-routerUsers.patch('/me/avatar', updateAvatar);
+routerUsers.get('/', (req, res) => {
+  res.send(users);
+});
 
 module.exports = routerUsers;

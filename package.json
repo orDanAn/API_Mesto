@@ -1,11 +1,12 @@
 {
-  "name": "API Mesto",
-  "version": "0.0.5",
-  "description": "API project Mesto",
+  "name": "home_work_12",
+  "version": "1.0.0",
+  "description": "",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js"
+
   },
   "author": "Danil",
   "license": "ISC",
@@ -14,10 +15,8 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "express": "^4.17.1",
-    "mongoose": "^5.7.11"
+    "express": "^4.17.1"
   }
 }
