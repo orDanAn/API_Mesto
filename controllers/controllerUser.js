@@ -1,4 +1,9 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -12,7 +17,7 @@ module.exports.getUserID = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'нет пользователя с таким ID' });
       }
-      return res.send({ data: user });
+      return res.send({ _id: user._id, name: user.name });
     })
     .catch((err) => {
       if (err.message.indexOf('Cast to ObjectId failed for value') === 0) {
@@ -23,9 +28,14 @@ module.exports.getUserID = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
+    }))
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -46,4 +56,25 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  console.log(req.body);
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+
+      res
+        .cookie('jwt', token, {
+          httpOnly: true,
+        })
+        .end();
+    })
+    .catch((err) => {
+      // ошибка аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
 };
