@@ -4,14 +4,13 @@ const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-
-module.exports.getUsers = (req, res) => {
+function getUsers(req, res) {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.getUserID = (req, res) => {
+function getUserID(req, res) {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
@@ -25,9 +24,13 @@ module.exports.getUserID = (req, res) => {
       }
       return res.status(500).send({ message: err.message });
     });
-};
+}
 
-module.exports.createUser = (req, res) => {
+// eslint-disable-next-line consistent-return
+function createUser(req, res) {
+  if (!req.body.password) {
+    return res.send({ message: 'Укажите пароль' });
+  }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,
@@ -38,29 +41,28 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.updateUser = (req, res) => {
+function updateUser(req, res) {
   const { name, about } = req.body;
   const { _id } = req.user;
 
   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.updateAvatar = (req, res) => {
+function updateAvatar(req, res) {
   const { avatar } = req.body;
   const { _id } = req.user;
 
   User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.login = (req, res) => {
+function login(req, res) {
   const { email, password } = req.body;
-  console.log(req.body);
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
@@ -68,6 +70,7 @@ module.exports.login = (req, res) => {
       res
         .cookie('jwt', token, {
           httpOnly: true,
+          sameSite: true,
         })
         .end();
     })
@@ -77,4 +80,8 @@ module.exports.login = (req, res) => {
         .status(401)
         .send({ message: err.message });
     });
+}
+
+module.exports = {
+  getUsers, getUserID, createUser, updateUser, updateAvatar, login,
 };
