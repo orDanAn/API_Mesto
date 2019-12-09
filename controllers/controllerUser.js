@@ -29,7 +29,7 @@ function getUserID(req, res) {
 // eslint-disable-next-line consistent-return
 function createUser(req, res) {
   if (!req.body.password) {
-    return res.send({ message: 'Укажите пароль' });
+    return res.status(422).send({ message: 'Укажите пароль' });
   }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
