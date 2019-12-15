@@ -15,3 +15,6 @@ node_modules
 
 # Node-modules
 node_modules
+
+# env
+.env
