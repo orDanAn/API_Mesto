@@ -31,9 +31,6 @@ function getUserID(req, res, next) {
 
 // eslint-disable-next-line consistent-return
 function createUser(req, res, next) {
-  if (!req.body.password) {
-    throw new Unauthorized('Укажите пароль');
-  }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,
